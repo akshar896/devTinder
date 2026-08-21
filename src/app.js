@@ -1,17 +1,9 @@
 const express=require('express');
 const app=express();
 
+const {auth}=require('./middlwares/auth')
 //now we will see the use of middlewares in auth
-const auth =(req,res,next)=>{
-    const token="abcx";
-    const authToken="abc";
-    if(token===authToken){
-        next();
-    }
-    else{
-        res.status(401).send("Unauthorised access");
-    }
-}
+
 app.get("/user/profile/data",auth,(req,res)=>{
     res.send("Getting the user profile data");
 })
