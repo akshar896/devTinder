@@ -1,15 +1,16 @@
 const express=require('express');
 const app=express();
 
-const {auth}=require('./middlwares/auth')
-//now we will see the use of middlewares in auth
-
-app.get("/user/profile/data",auth,(req,res)=>{
-    res.send("Getting the user profile data");
+app.get("/user/profile/data",(req,res)=>{
+    try{
+        res.send("Getting user data");
+    }
+    catch(err){
+        res.status(404).send("Something went wrong");
+    }
 })
-//this is the another way of using middlewares...
-//one more clean way is to use other file to create the middlewares
-//and from there import it....
+//error handling basics...you should always use try and catch block
+//in case of any code crash...its a good practice
 
 app.listen(7777, () => {
     console.log("Server is listening on the port 7777");
