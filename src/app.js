@@ -10,7 +10,7 @@ app.get("/user/profile/data",(req,res)=>{
     }
 })
 //error handling basics...you should always use try and catch block
-//in case of any code crash...its a good practice
+//in case of any code crash...its a good practice......
 
 app.listen(7777, () => {
     console.log("Server is listening on the port 7777");
