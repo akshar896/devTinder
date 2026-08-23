@@ -7,13 +7,17 @@ const client = new MongoClient(uri);
 async function connectDB() {
     try {
         await client.connect();
-
+        const db=client.db('HelloWord')
+        const users=client.db('HelloWord').collection('User');
+        const findResult=await users.find({}).toArray();
+        console.log(findResult);
         console.log('MongoDB connected successfully!');
     } catch (error) {
         console.log('MongoDB connection failed:', error);
     }
 }
 connectDB();
+console.log("Hello bro");
 module.exports={
     connectDB,
 }
