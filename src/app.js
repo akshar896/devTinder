@@ -1,7 +1,6 @@
 const express=require('express');
 const app=express();
 const {connectDB}=require('./utils/database')
-connectDB()
 app.get("/user/profile/data",(req,res)=>{
     try{
         res.send("Getting user data");
