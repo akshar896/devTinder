@@ -41,4 +41,7 @@ connectDB().then(()=>{
     app.listen(7777, () => {
         console.log("Server is listening on the port 7777");
     });
+}).catch((err)=>{
+    res.send(err.message);
 });
+
