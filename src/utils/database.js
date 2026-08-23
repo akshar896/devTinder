@@ -9,6 +9,12 @@ async function connectDB() {
         await client.connect();
         const db=client.db('HelloWord')
         const users=client.db('HelloWord').collection('User');
+        const data={
+            firstName:"Deepika",
+            lastName:"Padukon",
+            age:37,
+        }
+        await users.insertMany([data]);
         const findResult=await users.find({}).toArray();
         console.log(findResult);
         console.log('MongoDB connected successfully!');
