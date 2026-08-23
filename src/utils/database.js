@@ -9,7 +9,7 @@ async function connectDB() {
         await client.connect();
         const db=client.db('HelloWord')
         const users=client.db('HelloWord').collection('User');
-        await users.deleteOne({firstName:"Deepika"});
+        await users.updateOne({firstName:"Deepika"},{$set:{age:41}});
         console.log('MongoDB connected successfully!');
     } catch (error) {
         console.log('MongoDB connection failed:', error);
