@@ -16,18 +16,47 @@ const {connectDB}=require('./config/database');
 
 app.use(express.json());
 app.post("/signup",async (req,res)=>{
-    const user=User({
-        firstName:req.body.firstName,
-        lastName:req.body.lastName,
-        age:req.body.age,
-        password:req.body.password,
-    })
+    const user=User(req.body);
     try{
         await user.save();
         res.send("Data saved successfully");
     }
     catch(err){
         res.status(400).send("Error saving the data "+err.message);
+    }
+})
+//here we are doing basic read operations in mongoose
+app.get("/feed",async (req,res)=>{
+    const userEmail=req.body.emailId;
+    const users=await User.find({emailId:userEmail});
+    try{
+        if(users.length===0){
+            res.status(400).send("User not found");
+        }
+        else{
+            res.send(users);
+            console.log(users);
+        }
+    }
+    catch(err){
+        res.send(err.message);
+    }
+})
+//here we will get all the users from the database..you can try more
+//features of mongoose models from the mongoose documentations
+app.get("/feedAll",async (req,res)=>{
+    const users=await User.find({});
+    try{
+        if(users.length===0){
+            res.status(400).send("No user has been added as of now");
+        }
+        else{
+            res.send(users);
+            console.log(users);
+        }
+    }
+    catch(err){
+        res.send(err.message);
     }
 })
 connectDB().then(()=>{
