@@ -2,38 +2,32 @@ const express=require('express');
 const app=express();
 const User=require('./models/user');
 const {connectDB}=require('./config/database');
+//it is unreal that you always create a user instance by hardcoding it from 
+//here...But what stands more realistic is that you would get request from the 
+//user and you will have to save their data which is called dynamic saving of user
+//data...Now the question is how to do it??
+//user will send the request in the json format from the body...and we will read the json data
+//and then save it....But here is an interesting part....if you console.log(req.body)
+//you will recieve the output as undefined because you javascript can directly 
+//read that json data so we need a middleware for that..And exrpess provided us with
+//an inbuilt middleware express.json()...you can either pass it into each and every 
+//route where you want to read the data or else you do app.use(express.json()) and 
+//the middleware will be applicable for each and every route....
+
+app.use(express.json());
 app.post("/signup",async (req,res)=>{
-    // You can consider 'User' model as a class and 'user' as an instance
-    // of that class.
-    //
-    // Important:
-    // devTinder is your database.
-    // Inside the database, you have collections, for example, the 'users'
-    // collection.
-    //
-    // To define the structure of a user document, you create a userSchema.
-    // You can consider a Schema as a blueprint that defines what fields
-    // and rules a user document should have.
-    //
-    // After creating the Schema, you create a Model from that Schema.
-    // You can think of the Model as a class.
-    //
-    // Then you create instances of that Model, which are documents.
-    // A document represents one actual user and contains fields such as
-    // firstName, lastName, emailId, age, gender, etc.
-    //Database->collections->documents->fields
-    const user=new User({
-        firstName:"Virat",
-        lastName:"Kohli",
-        age:39,
-        password:"Anushka@123",
+    const user=User({
+        firstName:req.body.firstName,
+        lastName:req.body.lastName,
+        age:req.body.age,
+        password:req.body.password,
     })
     try{
         await user.save();
-        res.send("Data added successfully");
+        res.send("Data saved successfully");
     }
     catch(err){
-        res.status(400).send("Error connecting database"+err.message);
+        res.status(400).send("Error saving the data "+err.message);
     }
 })
 connectDB().then(()=>{
