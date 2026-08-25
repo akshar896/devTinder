@@ -16,19 +16,17 @@ app.post("/signup",async (req,res)=>{
 })
 
 app.patch("/update/user",async (req,res)=>{
-    const { emailId, newEmailId } = req.body;
+    const userId = req.body.userId;
+    const data=req.body
     try{
-        await User.updateOne(
-            { emailId: emailId },
-            { $set: { emailId: newEmailId } }
-        );
+        await User.findByIdAndUpdate({_id:userId},data);
         res.send("User updated successfully");
     }
     catch(err){
         res.status(400).send("Error saving the data "+err.message);
     }
 })
-
+//another method of updating user
 connectDB().then(()=>{
     console.log("Database connection established");
     app.listen(7777, () => {
