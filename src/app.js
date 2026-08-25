@@ -8,7 +8,7 @@ app.post("/signup",async (req,res)=>{
     const user=User(req.body);
     try{
         await user.save();
-        res.send("Data saved successfully");
+        res.send("User added successfully");
     }
     catch(err){
         res.status(400).send("Error saving the data "+err.message);
@@ -16,10 +16,10 @@ app.post("/signup",async (req,res)=>{
 })
 
 app.delete("/delete/user",async (req,res)=>{
-    const userId=req.body.emailId;
+    const userId=req.body._id;
     const data=req.body;
     try{
-        await User.deleteOne({emailId:userId});
+        await User.deleteOne({_id:userId});
         res.send("User deleted successfully");
     }
     catch(err){
