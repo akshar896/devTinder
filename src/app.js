@@ -15,12 +15,14 @@ app.post("/signup",async (req,res)=>{
     }
 })
 
-app.delete("/delete/user",async (req,res)=>{
-    const userId=req.body._id;
-    const data=req.body;
+app.patch("/update/user",async (req,res)=>{
+    const { emailId, newEmailId } = req.body;
     try{
-        await User.deleteOne({_id:userId});
-        res.send("User deleted successfully");
+        await User.updateOne(
+            { emailId: emailId },
+            { $set: { emailId: newEmailId } }
+        );
+        res.send("User updated successfully");
     }
     catch(err){
         res.status(400).send("Error saving the data "+err.message);
