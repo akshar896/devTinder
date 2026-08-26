@@ -26,7 +26,11 @@ app.patch("/update/user",async (req,res)=>{
         res.status(400).send("Error saving the data "+err.message);
     }
 })
-//another method of updating user
+//note:If you are passing some key that is not defined in the 
+//schema while defining then it will be ignored while you are updating
+//if you want to use undefined keys then you have to write 
+//strict=false in the schema definition
+
 connectDB().then(()=>{
     console.log("Database connection established");
     app.listen(7777, () => {
