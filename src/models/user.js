@@ -40,6 +40,9 @@ const userSchema=new Schema({
             }
         }
     },
+    skills:{
+        type:Array,
+    },
     city:{
         type:String,
         maxLength:20,

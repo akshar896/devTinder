@@ -15,10 +15,18 @@ app.post("/signup",async (req,res)=>{
     }
 })
 
-app.patch("/update/user",async (req,res)=>{
-    const userId = req.body.userId;
-    const data=req.body
+app.patch("/update/:userId/",async (req,res)=>{
+    const userId = req.params?.userId;
+    const data=req.body;
     try{
+        const allowedUpdates=["gender","age","skills","about"];
+        const isAllowedUpdates=Object.keys(data).every((k)=>allowedUpdates.includes(k));
+        if(!isAllowedUpdates){
+            throw new Error("Update not allowed");
+        }
+        if(data?.skills.length>10){
+            throw new Error("Skills can't me more than 10");
+        }
         await User.findByIdAndUpdate({_id:userId},data,{runValidators:true});
         res.send("User updated successfully");
     }
@@ -47,3 +55,4 @@ connectDB().then(()=>{
     res.send(err.message);
 });
 
+//doing api level validation, like what are users allowed to update in fields
