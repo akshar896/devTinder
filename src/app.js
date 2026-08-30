@@ -19,17 +19,24 @@ app.patch("/update/user",async (req,res)=>{
     const userId = req.body.userId;
     const data=req.body
     try{
-        await User.findByIdAndUpdate({_id:userId},data);
+        await User.findByIdAndUpdate({_id:userId},data,{runValidators:true});
         res.send("User updated successfully");
     }
     catch(err){
         res.status(400).send("Error saving the data "+err.message);
     }
 })
-//note:If you are passing some key that is not defined in the 
-//schema while defining then it will be ignored while you are updating
-//if you want to use undefined keys then you have to write 
-//strict=false in the schema definition
+// // In this section, we are using validators to make our schema more robust.
+
+// Note:
+// When signing up a new user, validators are automatically applied
+// when user.save() is called.
+//
+// However, when updating an existing user using methods like
+// findByIdAndUpdate(), Mongoose does not run validators by default.
+//
+// Therefore, we need to explicitly pass { runValidators: true }
+// if we want schema validators to run during the update as well.
 
 connectDB().then(()=>{
     console.log("Database connection established");
