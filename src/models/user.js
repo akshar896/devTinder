@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const validator=require('validator');
 const {Schema}=mongoose;
 const userSchema=new Schema({
     firstName:{
@@ -13,10 +14,22 @@ const userSchema=new Schema({
         type:String,
         trim:true,
         required:true,
+        validate(value){
+            const isEmail=validator.isEmail(value);
+            if(!isEmail){
+                throw new Error(":Email id invalid");
+            }
+        },   
     },
     password:{
         type:String,
         required:true,
+        validate(value){
+            const isPassword=validator.isStrongPassword(value);
+            if(!isPassword){
+                throw new Error(":Give some strong password");
+            }
+        },
     },
     age:{
         type:Number,
@@ -46,6 +59,15 @@ const userSchema=new Schema({
     city:{
         type:String,
         maxLength:20,
+    },
+    photoURL:{
+        type:String,
+        validate(value){
+            const isUrl=validator.isURL(value);
+            if(!isUrl){
+                throw new Error(":invalid url");
+            }
+        }
     }
 },{
     timestamps:true,
