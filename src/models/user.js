@@ -4,6 +4,7 @@ const userSchema=new Schema({
     firstName:{
         type:String,
         required:true,
+        minLength:3,
     },
     lastName:{
         type:String,
@@ -11,9 +12,11 @@ const userSchema=new Schema({
     emailId:{
         type:String,
         trim:true,
+        required:true,
     },
     password:{
         type:String,
+        required:true,
     },
     age:{
         type:Number,
@@ -41,7 +44,9 @@ const userSchema=new Schema({
         type:String,
         maxLength:20,
     }
+},{
+    timestamps:true,
 });
-
+// after adding timestamps it saves user create time and update time
 const userModel=mongoose.model("User",userSchema);
 module.exports=userModel;
