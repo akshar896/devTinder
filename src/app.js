@@ -6,8 +6,10 @@ const {validateSignUpData}=require('./utils/validation');
 const bcrypt=require('bcrypt');
 const cookieParser=require("cookie-parser");
 app.use(express.json());
-app.use(cookieParser);//middleware for getting the cookies from req
-
+app.use(cookieParser());//middleware for getting the cookies from req
+app.post("/test",(req,res)=>{
+    res.send("Everything is fine");
+})
 app.post("/signup",async (req,res)=>{
     try{
         //Validation of data
@@ -40,7 +42,7 @@ app.post("/login",async (req,res)=>{
         //then compare the password and hash password
         const isPasswordValid=await bcrypt.compare(password,user.password);
         if(isPasswordValid){
-            const cookie=res.cookie;
+            const cookie=res.cookie("token","YeTeraToken");
             res.send("Logged in successfully");
         }
         else{
@@ -51,15 +53,15 @@ app.post("/login",async (req,res)=>{
         res.status(400).send("Error:"+err.message);
     }
 })
-//to read the cookies from req we need a middleware called cookie parser
+//sending a dummy cookie to the user
+
  
 
 connectDB().then(()=>{
     console.log("Database connection established");
-    app.listen(7777, () => {
-        console.log("Server is listening on the port 7777");
+    app.listen(3232, () => {
+        console.log("Server is listening on the port 3232");
     });
 }).catch((err)=>{
     res.send(err.message);
 });
-
