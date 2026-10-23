@@ -5,6 +5,7 @@ const {connectDB}=require('./config/database');
 const {validateSignUpData}=require('./utils/validation');
 const bcrypt=require('bcrypt');
 const cookieParser=require("cookie-parser");
+const jwt = require('jsonwebtoken');
 app.use(express.json());
 app.use(cookieParser());//middleware for getting the cookies from req
 app.post("/test",(req,res)=>{
@@ -42,7 +43,8 @@ app.post("/login",async (req,res)=>{
         //then compare the password and hash password
         const isPasswordValid=await bcrypt.compare(password,user.password);
         if(isPasswordValid){
-            const cookie=res.cookie("token","YeTeraToken");
+            const token=await jwt.sign({_id:user._id},"DEV@Tinder$790")
+            const cookie=res.cookie("token",token);
             res.send("Logged in successfully");
         }
         else{
@@ -53,14 +55,23 @@ app.post("/login",async (req,res)=>{
         res.status(400).send("Error:"+err.message);
     }
 })
-//sending a dummy cookie to the user
 
- 
-
+ app.get("/profile",async (req,res)=>{
+    const cookies=req.cookies;
+    const {token}=cookies;
+    const decodedMessage=jwt.verify(token,"DEV@Tinder$790");
+    const {_id}=decodedMessage;
+    const user=await User.findById(_id);
+    if(!user){
+        throw new Error("Please login first to get the profile data");
+    }
+    res.send(user);
+ })
+//only the person logged can get his profile
 connectDB().then(()=>{
     console.log("Database connection established");
-    app.listen(3232, () => {
-        console.log("Server is listening on the port 3232");
+    app.listen(7989, () => {
+        console.log("Server is listening on the port 7989");
     });
 }).catch((err)=>{
     res.send(err.message);
