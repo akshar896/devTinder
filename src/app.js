@@ -6,6 +6,7 @@ const {validateSignUpData}=require('./utils/validation');
 const bcrypt=require('bcrypt');
 const cookieParser=require("cookie-parser");
 const jwt = require('jsonwebtoken');
+const {userAuth}=require("./middlwares/auth");
 app.use(express.json());
 app.use(cookieParser());//middleware for getting the cookies from req
 app.post("/test",(req,res)=>{
@@ -56,18 +57,17 @@ app.post("/login",async (req,res)=>{
     }
 })
 
- app.get("/profile",async (req,res)=>{
-    const cookies=req.cookies;
-    const {token}=cookies;
-    const decodedMessage=jwt.verify(token,"DEV@Tinder$790");
-    const {_id}=decodedMessage;
-    const user=await User.findById(_id);
-    if(!user){
-        throw new Error("Please login first to get the profile data");
-    }
+app.get("/profile",userAuth,async (req,res)=>{
+    const user=req.user;
     res.send(user);
- })
-//only the person logged can get his profile
+})
+
+app.post("/sendConnectionRequest",userAuth,async (req,res)=>{
+    const toWhom=req.body.emailId;
+    const user=req.user;
+    const otherUser=await User.findOne({emailId:toWhom});
+    res.send(user.firstName+" "+user.lastName+" sent connection request to "+otherUser.firstName+" "+otherUser.lastName);
+})
 connectDB().then(()=>{
     console.log("Database connection established");
     app.listen(7989, () => {
@@ -76,3 +76,5 @@ connectDB().then(()=>{
 }).catch((err)=>{
     res.send(err.message);
 });
+//Write userAuth middleware
+// Add the userAuth middleware in /profile and a new /sendConnectionRequest api

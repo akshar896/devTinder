@@ -1,13 +1,21 @@
-const auth =(req,res,next)=>{
-    const token="abcr";
-    const authToken="abc";
-    if(token===authToken){
-        next();
+const jwt=require('jsonwebtoken');
+const User=require('../models/user');
+const userAuth =async (req,res,next)=>{
+    try{
+        const {token}=req.cookies;
+        const decodedMessage=jwt.verify(token,"DEV@Tinder$790")
+        const {_id}=decodedMessage;
+        const user=await User.findById(_id);
+        if(!user){
+            throw new Error("Please login first to fulfil your request");
+        }
+        req.user=user;
     }
-    else{
-        res.status(401).send("Unauthorised access");
+    catch(err){
+        res.status(400).send("Error:"+err.message);
     }
+    next();
 }
 module.exports={
-    auth
+    userAuth
 }
