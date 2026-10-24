@@ -44,8 +44,8 @@ app.post("/login",async (req,res)=>{
         //then compare the password and hash password
         const isPasswordValid=await bcrypt.compare(password,user.password);
         if(isPasswordValid){
-            const token=await jwt.sign({_id:user._id},"DEV@Tinder$790")
-            const cookie=res.cookie("token",token);
+            const token=await jwt.sign({_id:user._id},"DEV@Tinder$790",{expiresIn:"10s"})
+            const cookie=res.cookie("token",token,{maxAge: 10 * 1000});
             res.send("Logged in successfully");
         }
         else{
@@ -63,18 +63,24 @@ app.get("/profile",userAuth,async (req,res)=>{
 })
 
 app.post("/sendConnectionRequest",userAuth,async (req,res)=>{
-    const toWhom=req.body.emailId;
-    const user=req.user;
-    const otherUser=await User.findOne({emailId:toWhom});
-    res.send(user.firstName+" "+user.lastName+" sent connection request to "+otherUser.firstName+" "+otherUser.lastName);
+    try{
+        const toWhom=req.body.emailId;
+        const user=req.user;
+        const otherUser=await User.findOne({emailId:toWhom});
+        res.send(user.firstName+" "+user.lastName+" sent connection request to "+otherUser.firstName+" "+otherUser.lastName);
+    }
+    catch(err){
+        throw new Error("Error:"+err.message);
+    }
+    
 })
 connectDB().then(()=>{
     console.log("Database connection established");
-    app.listen(7989, () => {
-        console.log("Server is listening on the port 7989");
+    app.listen(3000, () => {
+        console.log("Server is listening on the port 3000");
     });
 }).catch((err)=>{
     res.send(err.message);
 });
-//Write userAuth middleware
-// Add the userAuth middleware in /profile and a new /sendConnectionRequest api
+//expiring the cookie after 10 seconds and then checking if we are able to send the
+//connection request
