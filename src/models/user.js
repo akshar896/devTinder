@@ -1,5 +1,7 @@
 const mongoose=require('mongoose');
 const validator=require('validator');
+const jwt=require('jsonwebtoken');
+const bcrypt=require('bcrypt');
 const {Schema}=mongoose;
 const userSchema=new Schema({
     firstName:{
@@ -72,6 +74,18 @@ const userSchema=new Schema({
 },{
     timestamps:true,
 });
+
+userSchema.methods.getJwt=async function(){
+    const user=this;
+    const token=await jwt.sign({_id:user._id},"DEV@Tinder$790");
+    return token;
+}
+
+userSchema.methods.validatePassword=async function(inputPassword){
+    const user=this;
+    const isPasswordValid=await bcrypt.compare(inputPassword,user.password);
+    return isPasswordValid;
+}
 // after adding timestamps it saves user create time and update time
 const userModel=mongoose.model("User",userSchema);
 module.exports=userModel;

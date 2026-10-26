@@ -42,9 +42,9 @@ app.post("/login",async (req,res)=>{
             throw new Error("Email id doesn't exists");
         }
         //then compare the password and hash password
-        const isPasswordValid=await bcrypt.compare(password,user.password);
+        const isPasswordValid=await user.validatePassword(password);
         if(isPasswordValid){
-            const token=await jwt.sign({_id:user._id},"DEV@Tinder$790",{expiresIn:"10s"})
+            const token=await user.getJwt();
             const cookie=res.cookie("token",token,{maxAge: 10 * 1000});
             res.send("Logged in successfully");
         }
@@ -56,7 +56,8 @@ app.post("/login",async (req,res)=>{
         res.status(400).send("Error:"+err.message);
     }
 })
-
+//creating schema methods to create token and validate password instead of repeating
+//the process again and again
 app.get("/profile",userAuth,async (req,res)=>{
     const user=req.user;
     res.send(user);
@@ -82,5 +83,3 @@ connectDB().then(()=>{
 }).catch((err)=>{
     res.send(err.message);
 });
-//expiring the cookie after 10 seconds and then checking if we are able to send the
-//connection request
