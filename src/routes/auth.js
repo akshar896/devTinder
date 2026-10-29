@@ -31,8 +31,11 @@ authRouter.post("/signup",async (req,res)=>{
 authRouter.post("/login",async (req,res)=>{
     try{
         //first validate the email
+        console.log("1. Login route hit");
         const {emailId,password}=req.body;
+        console.log("2. Request body received");
         const user=await User.findOne({emailId});
+        console.log("3. User query completed", !!user);
         if(!user){
             throw new Error("Email id doesn't exists");
         }
@@ -40,7 +43,8 @@ authRouter.post("/login",async (req,res)=>{
         const isPasswordValid=await user.validatePassword(password);
         if(isPasswordValid){
             const token=await user.getJwt();
-            const cookie=res.cookie("token",token,{maxAge: 10 * 1000});
+            const cookie=res.cookie("token",token);
+            console.log("4. Sending response");
             res.send("Logged in successfully");
         }
         else{
@@ -50,6 +54,10 @@ authRouter.post("/login",async (req,res)=>{
     catch(err){
         res.status(400).send("Error:"+err.message);
     }
+})
+
+authRouter.post("/logout", async (req,res)=>{
+    res.clearCookie("token").send("logged out successfully");
 })
 
 module.exports={
