@@ -56,6 +56,10 @@ userRouter.get("/users/connections",userAuth,async (req,res)=>{
 userRouter.get("/feed",userAuth,async (req,res)=>{
     try{
         const loggedInUser=req.user;
+        const page= parseInt(req.query.page) || 1;
+        let limit=parseInt(req.query.limit) || 10;
+        limit=limit>50?50:limit;
+        const skip=(page-1)*limit;
         //should not see user itself in the feed
         //any accepted rejected ignored or interested must not be visible
         const connections=await ConnectionRequest.find({
@@ -67,8 +71,10 @@ userRouter.get("/feed",userAuth,async (req,res)=>{
             hideUsersFromFeed.add(req.toUserId.toString());
         })
         const users=await User.find({
-            _id:{$nin:Array.from(hideUsersFromFeed)}
-        })
+            $and:[{_id:{$nin:Array.from(hideUsersFromFeed)}},
+                {_id:{$ne:loggedInUser._id}}]
+            
+        }).select(USER_SAFE_DATA).skip(skip).limit(limit);
         res.json({data:users});
     }
     catch(err){
