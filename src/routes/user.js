@@ -2,7 +2,8 @@ const {userAuth}=require("../middlwares/auth");
 const ConnectionRequest=require('../models/connectionRequest');
 const express=require("express");
 const userRouter=express.Router();
-
+const USER_SAFE_DATA = "firstName lastName age gender";
+const User=require("../models/user")
 userRouter.get("/users/requests/received",userAuth,async (req,res)=>{
     try{
         const loggedInUser=req.user;
@@ -49,6 +50,29 @@ userRouter.get("/users/connections",userAuth,async (req,res)=>{
     }
     catch(err){
         res.status(400).send("ERROR:"+ err.message+" request.js");
+    }
+})
+
+userRouter.get("/feed",userAuth,async (req,res)=>{
+    try{
+        const loggedInUser=req.user;
+        //should not see user itself in the feed
+        //any accepted rejected ignored or interested must not be visible
+        const connections=await ConnectionRequest.find({
+            $or:[{fromUserId:loggedInUser._id},{toUserId:loggedInUser._id}]
+        }).select("fromUserId toUserId")
+        const hideUsersFromFeed=new Set();
+        connections.forEach((req)=>{
+            hideUsersFromFeed.add(req.fromUserId.toString());
+            hideUsersFromFeed.add(req.toUserId.toString());
+        })
+        const users=await User.find({
+            _id:{$nin:Array.from(hideUsersFromFeed)}
+        })
+        res.json({data:users});
+    }
+    catch(err){
+        res.status(404).send("ERROR:"+err.message);
     }
 })
 module.exports={

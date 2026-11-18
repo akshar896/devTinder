@@ -38,6 +38,8 @@ requestRouter.post("/request/send/:status/:toUserId",userAuth,async (req,res)=>{
             fromUserId:fromUserId,
             toUserId:toUserId,
             status:status,
+            from:req.user.firstName+" "+req.user.lastName,
+            to:toUser.firstName+" "+toUser.lastName,
         })
         const data=await connectionRequest.save();
         res.json({

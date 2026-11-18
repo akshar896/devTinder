@@ -18,6 +18,12 @@ const connectionRequestSchema=mongoose.Schema({
             message:'{VALUE} is incorrect status type',
         },
     },
+    from:{
+        type:String,
+    },
+    to:{
+        type:String,
+    }
 },
 {timestamps:true});
 
